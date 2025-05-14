@@ -15,6 +15,7 @@ const TOTAL_GUESSES = 6;
 function HangmanBoard() {
   const { data: wordData, isLoading, error } = useGetWord();
   const [guessState, setGuessState] = useState<string[]>([]);
+  const [seenLetters, setSeenLetters] = useState<string[]>([]);
   const [totalGuesses, setTotalGuesses] = useState<number>(0);
   const answerArray: string[] = useMemo(
     () => wordData?.word.split("") || [],
@@ -32,6 +33,7 @@ function HangmanBoard() {
       return newGuessState;
     });
     setTotalGuesses((prev) => prev + 1);
+    setSeenLetters((prev) => [...prev, letter]);
   }, []);
 
   const clickTile = (letter: string) => {
@@ -50,6 +52,7 @@ function HangmanBoard() {
       setGuessState(
         Array.from({ length: answerArray.length }).fill("") as string[]
       );
+      setSeenLetters([]);
     } else if (totalGuesses === TOTAL_GUESSES) {
       alert("You lose!");
       setTotalGuesses(0);
@@ -93,7 +96,7 @@ function HangmanBoard() {
   return (
     <>
       <p className="text-center">
-        You have {TOTAL_GUESSES - totalGuesses + 1} tries left
+        You have {TOTAL_GUESSES - totalGuesses} tries left
       </p>
       <div className="flex gap-2">
         {answerArray.map((_, i) => (
@@ -106,7 +109,7 @@ function HangmanBoard() {
             handleClick={clickTile}
             letter={letter}
             key={i}
-            disabled={guessState.includes(letter.toLowerCase())}
+            disabled={seenLetters.includes(letter.toLowerCase())}
           />
         ))}
       </FlexWrapper>
@@ -116,7 +119,7 @@ function HangmanBoard() {
             key={i}
             handleClick={clickTile}
             letter={letter}
-            disabled={guessState.includes(letter.toLowerCase())}
+            disabled={seenLetters.includes(letter.toLowerCase())}
           />
         ))}
       </FlexWrapper>
@@ -126,7 +129,7 @@ function HangmanBoard() {
             key={i}
             handleClick={clickTile}
             letter={letter}
-            disabled={guessState.includes(letter.toLowerCase())}
+            disabled={seenLetters.includes(letter.toLowerCase())}
           />
         ))}
       </FlexWrapper>
